@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS alert_configs;
+DROP TABLE IF EXISTS api_keys;

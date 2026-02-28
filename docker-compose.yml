@@ -1,0 +1,65 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: arbengine-timescaledb
+    environment:
+      POSTGRES_USER: arbengine
+      POSTGRES_PASSWORD: arbengine_dev
+      POSTGRES_DB: arbengine
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U arbengine" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: arbengine-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: arbengine-backend
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    environment:
+      DATABASE_URL: postgres://arbengine:arbengine_dev@timescaledb:5432/arbengine?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+      SERVER_PORT: "8080"
+      GRPC_PORT: "9090"
+      USE_MOCK_FEEDS: "true"
+      LOG_LEVEL: debug
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: arbengine-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  timescaledb_data:
+  redis_data:
