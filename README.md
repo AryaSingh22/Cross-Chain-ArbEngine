@@ -2,7 +2,7 @@
 
 **Cross-Chain Arbitrage Monitor + IBC Relay Dashboard**
 Built natively for the Cosmos / IBC ecosystem.
-
+ 
 ## Architecture
 
 ```
