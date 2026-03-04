@@ -1,4 +1,4 @@
-# 🚀 Cosmos ArbEngine Pro
+# Cosmos ArbEngine Pro
 
 **Cross-Chain Arbitrage Monitor + IBC Relay Dashboard**
 Built natively for the Cosmos / IBC ecosystem.
